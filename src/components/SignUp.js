@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+import axios from 'axios';
+import S from '../style/S.SignUp';
 
 const SignUp = () =>{
 
@@ -10,64 +12,98 @@ const SignUp = () =>{
     const [emailError, setEmailError] = useState(null);
     const [passwordError, setpasswordError] = useState(null);
     const [password2Error, setpassword2Error] = useState(null);
+    const [userSignUp, setuserSignUp] = useState(''); 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(nick, email, password, password2);
+        //console.log(nick, email, password, password2);
 
+
+        /* walidacja użytkownika */
+        let errorNickTmp = null;
         if(nick === ''){
-            setNickError(`'Nazwa użytkownika' nie może być pusty`);
+            errorNickTmp=(`'Nazwa użytkownika' nie może być pusty`);
         }else if (/\s/.test(nick)){
-            setNickError(`'Nazwa użytkownika' nie może zawierać spacji`);
+            errorNickTmp=(`'Nazwa użytkownika' nie może zawierać spacji`);
         }else if (nick.length<4){
-            setNickError(`'Nazwa użytkownika' musi zawierać minimum 4 znaki`); 
-        }else setNickError(null);
+            errorNickTmp=(`'Nazwa użytkownika' musi zawierać minimum 4 znaki`); 
+        }
+        setNickError(errorNickTmp);
 
-
-
+        /* Walidacja e-mail */
+        let errorEmailTmp = null;
         if(email === ''){
-            setEmailError(`'e-mail' nie może być pusty`);
+            errorEmailTmp =(`'e-mail' nie może być pusty`);
         }else if (/\s/.test(email)){
-            setEmailError(`'e-mail' nie może zawierać spacji`);
+            errorEmailTmp =(`'e-mail' nie może zawierać spacji`);
         }else if (!/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(email)){
-            setEmailError(`'e-mail' jest niepoprawny`); 
-        }else setEmailError(null);
-        
+            errorEmailTmp =(`'e-mail' jest niepoprawny`); 
+        }
+        setEmailError(errorEmailTmp);
 
+       /*  Walidacja hasła */
+       let errorPasswordTmp = null;
         if(password === ''){
-            setpasswordError(`'Hasło' nie może być puste`);
+            errorPasswordTmp = (`'Hasło' nie może być puste`);
         }else if (/\s/.test(password)){
-            setpasswordError(`'Hasło' nie może zawierać spacji`); 
+            errorPasswordTmp = (`'Hasło' nie może zawierać spacji`); 
         }else if (password.length<6){
-            setpasswordError(`'Hasło' musi składać sie z min. 6 znaków`);
+            errorPasswordTmp = (`'Hasło' musi składać sie z min. 6 znaków`);
         }else if (! /\d/.test(password)){
-            setpasswordError(`'Hasło' musi zawierać przynajmniej 1 cyfrę`); 
+            errorPasswordTmp = (`'Hasło' musi zawierać przynajmniej 1 cyfrę`); 
         }else if (! /!|#|@|\$|%/.test(password)){
-            setpasswordError(`'Hasło' musi zawierać przynajmniej 1 znak specjalny: ! @ # $ %`); 
-        }else setpasswordError(null);
-
+            errorPasswordTmp = (`'Hasło' musi zawierać przynajmniej 1 znak specjalny: ! @ # $ %`); 
+        }
+        setpasswordError(errorPasswordTmp);
        
 
-
+       /*  Walidacja powtórzenia hasła */
+       let errorPassword2Tmp = null;
         if(password2 === ''){
-            setpassword2Error(`'Hasło' nie może być puste`);
+            errorPassword2Tmp =(`'Hasło' nie może być puste`);
         }else if (password !== password2){
-            setpassword2Error(`'Hasła' są różne`); 
-        }else setpassword2Error(null);
-        
-        console.log(nickError, emailError, passwordError, password2Error);
-        
+            errorPassword2Tmp =(`'Hasła' są różne`); 
+        }
+        setpassword2Error(errorPassword2Tmp);
 
-        if((nickError === null) &&
-            (emailError === null) &&
-            (passwordError === null) &&
-            (password2Error === null)){
+        
+        if((errorNickTmp === null) &&
+            (errorEmailTmp === null) &&
+            (errorPasswordTmp === null) &&
+            (errorPassword2Tmp === null)){
             let newUser = {
                 username: nick,
                 email: email,
                 password: password,
             }
-            console.log(newUser);
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+
+            axios.post(
+                'http://akademia108.pl/api/social-app/user/signup', 
+                JSON.stringify(newUser),
+                { 'headers': headers })
+                .then((req) => {
+                    
+                let user = req.data;    
+                    if(user.signedup){
+                        setuserSignUp(`Użytkonik ${user.user.username} został poprawnie zarejestrowany`);
+                    }else{
+                        setuserSignUp(`błąd rejestracji: ${user.user.username}`);
+                    }
+                    setNick('');
+                    setEmail('');
+                    setPassword('');
+                    setPassword2('');
+
+
+            }).catch((error) => {
+                setuserSignUp(`Błąd serwera : ${error.response.status} ${error.response.statusText}`);
+            })
+
         }
    
        
@@ -89,29 +125,30 @@ const SignUp = () =>{
     return(
         <div>
             <h2>Utwórz konto</h2>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Nazwa użytkownika:
-                    <input onChange={changeNick} value={nick} type="text" id="nick" name="nick"/>
-                </label>
-                <div>{nickError}</div>
-                <label>
-                    e-mail: 
-                    <input onChange={changeEmail}value={email} type="text" id="email" name="email" />
-                </label>
+            <S.Form onSubmit={handleSubmit}>
+                <S.Label>
+                    <S.Span>Nazwa użytkownika:</S.Span>
+                    <S.Input onChange={changeNick} value={nick} type="text" id="nick" name="nick"/>
+                </S.Label>
+                <S.Div>{nickError}</S.Div>
+                <S.Label>
+                    <S.Span>Adres e-mail:</S.Span>
+                    <S.Input onChange={changeEmail} value={email} type="text" id="email" name="email" />
+                </S.Label>
                 <div>{emailError}</div>
-                <label>
-                    Hasło:
-                    <input onChange={changePassword}value={password} type="password" id="password" name="password" />
-                </label>
+                <S.Label>
+                    <S.Span>Hasło:</S.Span>
+                    <S.Input onChange={changePassword} value={password} type="password" id="password" name="password"  />
+                </S.Label>
                 <div>{passwordError}</div>
-                <label>
-                    Potwierdź hasło
-                    <input onChange={changePassword2}value={password2} type="password" id="password2" name="password2" />
-                </label>
+                <S.Label>
+                    <S.Span>Powtórz hasło:</S.Span>
+                    <S.Input onChange={changePassword2} value={password2} type="password" id="password2" name="password2"  />
+                </S.Label>
                 <div>{password2Error}</div>
-                <input type="submit" value="Zarejestruj"/>
-            </form>
+                <S.Button type="submit">Zarejestruj się</S.Button>
+            </S.Form>
+            <S.Div>{userSignUp}</S.Div>
         </div>
     );
 }
