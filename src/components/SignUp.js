@@ -22,7 +22,7 @@ const SignUp = () =>{
         /* walidacja użytkownika */
         let errorNickTmp = null;
         if(nick === ''){
-            errorNickTmp=(`'Nazwa użytkownika' nie może być pusty`);
+            errorNickTmp=(`'Nazwa użytkownika' nie może być pusta`);
         }else if (/\s/.test(nick)){
             errorNickTmp=(`'Nazwa użytkownika' nie może zawierać spacji`);
         }else if (nick.length<4){
@@ -127,25 +127,25 @@ const SignUp = () =>{
             <h2>Utwórz konto</h2>
             <S.Form onSubmit={handleSubmit}>
                 <S.Label>
-                    <S.Span>Nazwa użytkownika:</S.Span>
+                    <S.Span>Nazwa użytkownika:</S.Span><S.Span className="info">{nickError}</S.Span>
                     <S.Input onChange={changeNick} value={nick} type="text" id="nick" name="nick"/>
                 </S.Label>
-                <S.Div>{nickError}</S.Div>
+                
                 <S.Label>
-                    <S.Span>Adres e-mail:</S.Span>
+                    <S.Span>Adres e-mail:</S.Span><S.Span className="info">{emailError}</S.Span>
                     <S.Input onChange={changeEmail} value={email} type="text" id="email" name="email" />
                 </S.Label>
-                <div>{emailError}</div>
+                
                 <S.Label>
-                    <S.Span>Hasło:</S.Span>
+                    <S.Span>Hasło:</S.Span><S.Span className="info">{passwordError}</S.Span>
                     <S.Input onChange={changePassword} value={password} type="password" id="password" name="password"  />
                 </S.Label>
-                <div>{passwordError}</div>
+                
                 <S.Label>
-                    <S.Span>Powtórz hasło:</S.Span>
+                    <S.Span>Powtórz hasło:</S.Span><S.Span className="info">{password2Error}</S.Span>
                     <S.Input onChange={changePassword2} value={password2} type="password" id="password2" name="password2"  />
                 </S.Label>
-                <div>{password2Error}</div>
+                
                 <S.Button type="submit">Zarejestruj się</S.Button>
             </S.Form>
             <S.Div>{userSignUp}</S.Div>

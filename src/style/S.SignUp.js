@@ -28,12 +28,13 @@ export const S = {
     `,
     Label: styled.label`
     background-color: rgb(232, 240, 254);
-    margin: 10px;
+    margin-top: 15px;
+    position: relative;
     `,
 
     Input: styled.input`
     margin: 0;
-    padding: 5px 10px;
+    padding: 12px 10px 5px 10px;
     outline: 0;
     border: 0;
     width: 300px;
@@ -52,6 +53,13 @@ export const S = {
     text-align: left;
     font-size: 8px;
     color: #6e757c;
+    position: absolute;
+    &.info{
+        color: red;
+        left: auto;
+        right: 0;
+        font-weight: bold;
+    }
     `,
 
     Div: styled.div`
